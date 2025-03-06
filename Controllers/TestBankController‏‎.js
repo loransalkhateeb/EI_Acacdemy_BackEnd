@@ -6,7 +6,6 @@ const Questions = require("../Models/QuestionsModel");
 const Answers = require("../Models/AnswersModel");
 const axios = require("axios");
 const { ErrorResponse } = require("../Utils/ValidateInput");
-const { client } = require("../Utils/redisClient");
 
 exports.addTestBank = async (req, res) => {
   try {
