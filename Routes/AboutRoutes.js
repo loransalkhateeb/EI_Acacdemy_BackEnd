@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const multer = require('../../Basma_New_Version/Config/Multer'); 
+const multer = require('../Config/Multer'); 
 const AboutController = require('../Controllers/AboutController'); 
 const rateLimiter = require('../Middlewares/rateLimiter');  
 

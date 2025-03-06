@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const multer = require('../../Basma_New_Version/Config/Multer.js'); 
+const multer = require('../Config/Multer.js'); 
 const PurchaseStepsController = require('../Controllers/PurchaseStepsController.js'); 
 const authMiddleware = require('../Middlewares/authMiddleware.js');  
 const rateLimiter = require('../Middlewares/rateLimiter.js');  

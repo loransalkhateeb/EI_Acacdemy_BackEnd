@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const multer = require("../../Basma_New_Version/Config/Multer");
-const AvailableCardsController = require("../../Basma_New_Version/Controllers/AvailableCardsController");
-const authMiddleware = require("../../Basma_New_Version/MiddleWares/authMiddleware");
-const rateLimiter = require("../../Basma_New_Version/MiddleWares/rateLimiter");
+const multer = require("../Config/Multer");
+const AvailableCardsController = require("../Controllers/AvailableCardsController");
+const authMiddleware = require("../Middlewares/authMiddleware");
+const rateLimiter = require("../Middlewares/rateLimiter");
 
 router.post('/create-available-cards', AvailableCardsController.createAvailableCard); 
 router.get('/available-cards', AvailableCardsController.getAllAvailableCards);
