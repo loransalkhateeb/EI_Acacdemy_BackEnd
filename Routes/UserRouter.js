@@ -3,14 +3,14 @@ const express = require('express');
 const UserController = require('../Controllers/UserController.js'); 
 const rateLimit = require('express-rate-limit');
 const router = express.Router();
-const upload = require('../../Basma_New_Version/Config/Multer.js')
+const upload = require('../Config/Multer.js')
 
 const passwordResetLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 5, // Limit each IP to 5 requests per window
+    windowMs: 15 * 60 * 1000, 
+    max: 5, 
     message: 'Too many password reset requests from this IP, please try again after 15 minutes.',
-    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+    standardHeaders: true, 
+    legacyHeaders: false, 
   });
 
 router.post('/register',upload.single('img'), register);
