@@ -1,0 +1,20 @@
+const express = require('express');
+const router = express.Router();
+const multer = require('../../Basma_New_Version/Config/Multer'); 
+const AboutController = require('../Controllers/AboutController'); 
+const rateLimiter = require('../Middlewares/rateLimiter');  
+
+
+router.post('/createabout', multer.single('img'), AboutController.createAbout);
+
+router.put('/updateabout/:id', rateLimiter, multer.single('img'), AboutController.updateAbout);
+
+router.get('/getabout', AboutController.getAbout);
+
+
+router.get('/getaboutById/:id', AboutController.getAboutById);
+
+
+router.delete('/deleteabout/:id', AboutController.deleteAbout);
+
+module.exports = router;
