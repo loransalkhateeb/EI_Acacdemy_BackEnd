@@ -249,18 +249,16 @@ exports.getTestBankByIdByNumberOfQuestions = async (req, res) => {
           model: Topic,
           include: {
             model: Questions,
-            attributes:["id","question_text","question_type","explanation"],
+            attributes: ["id", "question_text", "question_type", "explanation"],
             include: {
               model: Answers,
             },
-            order: Sequelize.fn('RAND'), 
-            limit: parseInt(number_of_questions),
           },
         },
       },
     });
 
-   
+  
     if (!testBank) {
       return res
         .status(404)
@@ -270,7 +268,33 @@ exports.getTestBankByIdByNumberOfQuestions = async (req, res) => {
     }
 
    
-    res.status(200).json(testBank);
+    let allQuestions = [];
+    testBank.Units.forEach(unit => {
+      unit.Topics.forEach(topic => {
+        allQuestions = allQuestions.concat(topic.Questions); 
+      });
+    });
+
+    
+    if (allQuestions.length < number_of_questions) {
+      return res.status(400).json({
+        message: "Not enough questions available",
+      });
+    }
+
+   
+    const randomQuestions = [];
+    while (randomQuestions.length < parseInt(number_of_questions)) {
+      const randomIndex = Math.floor(Math.random() * allQuestions.length);
+      const question = allQuestions[randomIndex];
+
+      if (!randomQuestions.includes(question)) {
+        randomQuestions.push(question);
+      }
+    }
+
+   
+    res.status(200).json(randomQuestions);
   } catch (error) {
     console.error("Error in getTestBankByIdByNumberOfQuestions:", error.message);
     res.status(500).json({
@@ -279,6 +303,7 @@ exports.getTestBankByIdByNumberOfQuestions = async (req, res) => {
     });
   }
 };
+
 
 
 exports.deleteTestBank = async (req, res) => {
