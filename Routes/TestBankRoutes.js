@@ -23,7 +23,7 @@ router.get('/gettestbank',TestBankController.getTestBank);
 router.get('/gettestbank/:id',TestBankController.getTestBankById);
 router.delete('/deletetestbank/:id',TestBankController.deleteTestBank);
 //Questions
-router.get('/getquestionbyid/:topic_id',TestBankController.getQuestionsById);
+router.get('/getQuestionsByQuestionCount/:number_of_questions',TestBankController.getQuestionsByQuestionCount);
 
 
 

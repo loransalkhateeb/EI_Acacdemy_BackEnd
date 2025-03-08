@@ -39,7 +39,7 @@ const TestBankRoutes = require('./Routes/TestBankRoutes')
 const StudentHistoryRoutes = require('./Routes/StudentHistoryRoutes')
 const ExamsRoutes = require('./Routes/ExamsRoutes')
 const geoip = require('geoip-lite');
-
+const QuestionsRoutes = require('./Routes/QuestionsRoutes')
 
 
 
@@ -94,6 +94,8 @@ app.use('/profile', ProfileRoutes);
 app.use('/testbank',TestBankRoutes);
 app.use('/studentshistory',StudentHistoryRoutes)
 app.use('/exams',ExamsRoutes)
+app.use('/Questions',QuestionsRoutes)
+
 
 const IP_LOOKUP_API = "https://ipqualityscore.com/api/json/ip/T0hMeOnMzeAnPVsmgH6AKMhguvmr1Yv9";
 
