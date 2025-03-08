@@ -187,6 +187,100 @@ exports.getTestBankById = async (req, res) => {
   }
 };
 
+
+
+exports.getTestBankById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const testBank = await TestBank.findByPk(id, {
+      include: {
+        model: Unit,
+        include: {
+          model: Topic,
+          include: {
+            model: Questions,
+            include: {
+              model: Answers,
+            },
+          },
+        },
+      },
+    });
+    if (!testBank) {
+      return res
+        .status(404)
+        .json(
+          ErrorResponse("testBank not found", [
+            `No testBank found with the given ID: ${id}`,
+          ])
+        );
+    }
+    res.status(200).json([testBank]);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json(
+        ErrorResponse("Failed to fetch testBank", [
+          "An error occurred while fetching the testBank.",
+        ])
+      );
+  }
+};
+
+
+
+exports.getTestBankByIdByNumberOfQuestions = async (req, res) => {
+  try {
+    const { id, number_of_questions } = req.params;
+
+   
+    if (!number_of_questions || isNaN(number_of_questions)) {
+      return res.status(400).json({
+        message: "Please enter a valid number of questions",
+      });
+    }
+
+    
+    const testBank = await TestBank.findByPk(id, {
+      include: {
+        model: Unit,
+        include: {
+          model: Topic,
+          include: {
+            model: Questions,
+            attributes:["id","question_text","question_type","explanation"],
+            include: {
+              model: Answers,
+            },
+            order: Sequelize.fn('RAND'), 
+            limit: parseInt(number_of_questions),
+          },
+        },
+      },
+    });
+
+   
+    if (!testBank) {
+      return res
+        .status(404)
+        .json({
+          message: `No testBank found with the given ID: ${id}`,
+        });
+    }
+
+   
+    res.status(200).json(testBank);
+  } catch (error) {
+    console.error("Error in getTestBankByIdByNumberOfQuestions:", error.message);
+    res.status(500).json({
+      message: "فشل في جلب بنك الاختبار",
+      error: error.message,
+    });
+  }
+};
+
+
 exports.deleteTestBank = async (req, res) => {
   const { id } = req.params;
 

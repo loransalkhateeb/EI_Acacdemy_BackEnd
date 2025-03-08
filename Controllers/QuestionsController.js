@@ -15,7 +15,7 @@ exports.getQuestionsByCount = async (req, res) => {
         }
 
         const questions = await Questions.findAll({
-            attributes: ["id", "question_type", "question_text", "correct_answer", "explanation"],
+            attributes: ["id", "question_type", "question_text","explanation"],
             order: Sequelize.fn('RAND'), 
             limit: parseInt(number_of_questions),
         });
