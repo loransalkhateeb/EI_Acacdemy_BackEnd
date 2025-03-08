@@ -246,3 +246,55 @@ exports.getQuestionsById = async (req, res) => {
       );
   }
 };
+
+const { Sequelize } = require('sequelize');
+
+
+exports.getQuestionsByQuestionCount = async (req, res) => {
+  try {
+    const { questionCount } = req.params;
+
+    const questions = await Questions.findAll({
+      attributes: ["id", "question_text", "question_type"],
+      include: [
+        {
+          model: Answers,
+          attributes: ["id", "answer_text"],
+          required: true
+        }
+      ],
+      order: Sequelize.fn('RAND'),
+      limit: questionCount
+    });
+
+    if (!questions || questions.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No questions available",
+        error: "Question bank is empty"
+      });
+    }
+
+    const formattedQuestions = questions.map(question => ({
+      id: question.id,
+      question_text: question.question_text,
+      question_type: question.question_type,
+      answers: question.answers
+    }));
+
+    res.status(200).json({
+      success: true,
+      message: "Questions retrieved successfully",
+      count: formattedQuestions.length,
+      data: formattedQuestions
+    });
+
+  } catch (error) {
+    console.error("Error in getQuestionsByQuestionCount:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch questions",
+      error: "Internal server error occurred"
+    });
+  }
+};

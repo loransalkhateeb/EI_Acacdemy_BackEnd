@@ -54,20 +54,18 @@ exports.getStudentHistory = async (req, res) => {
   try {
     const { number_of_questions } = req.params; 
     
-    
     if (!number_of_questions) {
       return res.status(400).json({
         message: "Please provide the number of questions."
       });
     }
 
-   
     const historyEntries = await Student_History.findAll({
       attributes: ["id", "user_id", "question_id", "answer_id", "mark"], 
       include: [
         {
           model: Question, 
-          attributes: ["question_type"], 
+          attributes: ["question_type","question_text","question_type","correct_answer","explanation"], 
           required: true, 
         }
       ],
