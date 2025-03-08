@@ -230,15 +230,29 @@ exports.getTestBankById = async (req, res) => {
 
 
 
+
 exports.getTestBankByIdByNumberOfQuestions = async (req, res) => {
   try {
-    const { id, number_of_questions } = req.params;
+    const { id, number_of_questions,user_id } = req.params;
 
-   
+
+    
     if (!number_of_questions || isNaN(number_of_questions)) {
       return res.status(400).json({
         message: "Please enter a valid number of questions",
       });
+    }
+
+    
+    const existingExams = await Exam.findAll({ 
+      where: { user_id }
+    });
+    
+    if (existingExams.length > 0) {
+      await Exam.destroy({
+        where: { user_id }
+      });
+      console.log(`Deleted ${existingExams.length} previous exam records for user ${user_id}`);
     }
 
     
@@ -258,16 +272,14 @@ exports.getTestBankByIdByNumberOfQuestions = async (req, res) => {
       },
     });
 
-  
+    
     if (!testBank) {
-      return res
-        .status(404)
-        .json({
-          message: `No testBank found with the given ID: ${id}`,
-        });
+      return res.status(404).json({
+        message: `No testBank found with the given ID: ${id}`,
+      });
     }
 
-   
+    
     let allQuestions = [];
     testBank.Units.forEach(unit => {
       unit.Topics.forEach(topic => {
@@ -293,7 +305,7 @@ exports.getTestBankByIdByNumberOfQuestions = async (req, res) => {
       }
     }
 
-   
+    
     res.status(200).json(randomQuestions);
   } catch (error) {
     console.error("Error in getTestBankByIdByNumberOfQuestions:", error.message);
@@ -367,6 +379,7 @@ exports.getQuestionsById = async (req, res) => {
 };
 
 const { Sequelize } = require('sequelize');
+const Exam = require("../Models/Exam");
 
 
 exports.getQuestionsByQuestionCount = async (req, res) => {
