@@ -6,30 +6,60 @@ const { validateInput, ErrorResponse } = require("../Utils/ValidateInput");
 const Student_History = require('../Models/Student_History');
 
 
+
 exports.createExam = async (req, res) => {
   try {
-   
-    const { user_id, question_id, answer_id, mark } = req.body;
+  
+    const { user_id, question_id, answer_id } = req.body;
+  
+    const selectedAnswer = await Answer.findByPk(answer_id, {
+      attributes: ['id', 'answer_text']
+    });
+    
+    
+    if (!selectedAnswer) {
+      return res.status(404).json({
+        success: false,
+        message: "Selected answer not found"
+      });
+    }
+    
+  
+    const question = await Question.findByPk(question_id, {
+      attributes: ['id', 'correct_answer']
+    });
+    
+    
+    if (!question) {
+      return res.status(404).json({
+        success: false,
+        message: "Question not found"
+      });
+    }
     
    
+    const mark = (selectedAnswer.answer_text === question.correct_answer) ? 1 : 0;
+    
+    
     const newExam = await Exam.create({ 
       user_id, 
       question_id, 
-      answer_id, 
-      mark 
+      answer_id,
+      mark
     });
     
-    
+   
     const newHistory = await Student_History.create({ 
       user_id, 
       question_id, 
-      answer_id, 
+      answer_id,
       mark 
     });
     
-    
+   
     res.status(201).json({
       success: true,
+      mark,
       exam: newExam,
       history: newHistory
     });
@@ -43,7 +73,6 @@ exports.createExam = async (req, res) => {
     });
   }
 };
-  
 
 
 exports.getExams = async (req, res) => {

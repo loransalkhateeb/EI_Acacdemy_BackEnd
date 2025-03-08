@@ -34,7 +34,7 @@ const Exam = sequelize.define('Exam', {
     },
     mark: {
         type: DataTypes.INTEGER,
-        allowNull: false,
+        allowNull: true,
         validate: {
             isIn: [[0, 1]] 
         }

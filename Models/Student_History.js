@@ -35,7 +35,7 @@ const Student_History = sequelize.define('Student_History', {
     },
     mark: {
         type: DataTypes.INTEGER,
-        allowNull: false,
+        allowNull: true,
         validate: {
             isIn: [[0, 1]] 
         }
