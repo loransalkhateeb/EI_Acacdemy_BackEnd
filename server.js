@@ -37,7 +37,13 @@ const ContactRoutes = require('./Routes/ContactRoutes');
 const ProfileRoutes = require('./Routes/ProfileRoutes');
 const CommentCourseRoutes = require('./Routes/CommentCourseRoutes');
 const TestBankRoutes = require('./Routes/TestBankRoutes')
+const StudentHistoryRoutes = require('./Routes/StudentHistoryRoutes')
+const ExamsRoutes = require('./Routes/ExamsRoutes')
 const geoip = require('geoip-lite');
+
+
+
+
 
 const CoursesUsers = require('./Models/CourseUsers');
 const client = require('./Utils/redisClient');
@@ -87,6 +93,8 @@ app.use('/purchasesteps', PurchaseStepsRoutes);
 app.use('/contactdynamic', ContactRoutes);
 app.use('/profile', ProfileRoutes);
 app.use('/testbank',TestBankRoutes);
+app.use('/studentshistory',StudentHistoryRoutes)
+app.use('/exams',ExamsRoutes)
 
 const IP_LOOKUP_API = "https://ipqualityscore.com/api/json/ip/T0hMeOnMzeAnPVsmgH6AKMhguvmr1Yv9";
 
