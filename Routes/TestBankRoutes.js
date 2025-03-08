@@ -21,6 +21,7 @@ const upload = multer({ storage });
 router.post('/addtestbank',upload.single('excelsheet'),TestBankController.addTestBank);
 router.get('/gettestbank',TestBankController.getTestBank);
 router.get('/gettestbank/:id',TestBankController.getTestBankById);
+router.get('/getTestBankByIdByNumberOfQuestions/:id/:number_of_questions',TestBankController.getTestBankByIdByNumberOfQuestions);
 router.delete('/deletetestbank/:id',TestBankController.deleteTestBank);
 //Questions
 router.get('/getQuestionsByQuestionCount/:number_of_questions',TestBankController.getQuestionsByQuestionCount);
