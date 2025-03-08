@@ -9,7 +9,6 @@ const bodyParser = require('body-parser');
 const axios = require('axios');
 const requestIp = require('request-ip');
 
-
 const AboutRoutes = require('./Routes/AboutRoutes');
 const AboutTeacher = require('./Routes/AboutTeacherRoutes');
 const AvailableCards = require('./Routes/AvailableCardsRoutes');
