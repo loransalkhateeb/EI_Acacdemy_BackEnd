@@ -1,6 +1,5 @@
 
 const Questions = require("../Models/QuestionsModel");
-const { ErrorResponse } = require("../Utils/ValidateInput");
 const { Sequelize } = require('sequelize');
 
 
@@ -11,7 +10,7 @@ exports.getQuestionsByCount = async (req, res) => {
 
         if (!number_of_questions || isNaN(number_of_questions)) {
             return res.status(400).json({
-                message: "الرجاء إدخال عدد صحيح من الأسئلة"
+                message:"Please Enter the invalid number of questions"
             });
         }
 
