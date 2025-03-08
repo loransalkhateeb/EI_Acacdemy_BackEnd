@@ -3,25 +3,46 @@ const Exam = require('../Models/Exam');
 const Answer = require('../Models/AnswersModel'); 
 const Question = require('../Models/QuestionsModel'); 
 const { validateInput, ErrorResponse } = require("../Utils/ValidateInput");
+const Student_History = require('../Models/Student_History');
 
 
 exports.createExam = async (req, res) => {
-    try {
-      const { user_id, question_id, answer_id, mark } = req.body;
-  
-      const newExam = await Exam.create({
-        user_id,
-        question_id,
-        answer_id, 
-        mark
-      });
-  
-      res.status(201).json(newExam);
-    } catch (error) {
-      console.error("Error in createExam:", error.message);
-      res.status(500).json({ message: "Failed to create exam", error: error.message });
-    }
-  };
+  try {
+   
+    const { user_id, question_id, answer_id, mark } = req.body;
+    
+   
+    const newExam = await Exam.create({ 
+      user_id, 
+      question_id, 
+      answer_id, 
+      mark 
+    });
+    
+    
+    const newHistory = await Student_History.create({ 
+      user_id, 
+      question_id, 
+      answer_id, 
+      mark 
+    });
+    
+    
+    res.status(201).json({
+      success: true,
+      exam: newExam,
+      history: newHistory
+    });
+    
+  } catch (error) {
+    console.error("Error in createExam:", error.message);
+    res.status(500).json({ 
+      success: false,
+      message: "Failed to create exam", 
+      error: error.message 
+    });
+  }
+};
   
 
 
