@@ -176,14 +176,55 @@ exports.getUserHistorySummary = async (req, res) => {
     const failRate = (incorrectAnswers / totalQuestions) * 100;
 
     let feedback;
-    if (successRate >= 90) {
-      feedback = "Excellent! Keep up the great work!";
+    if (successRate >= 95) {
+      feedback = {
+        level: "Exceptional Mastery",
+        message: "Flawless performance! You've mastered the material completely 🏅",
+        icon: "🎯",
+        recommendation: "Challenge yourself with advanced topics and competitions"
+      };
+    } else if (successRate >= 85) {
+      feedback = {
+        level: "Advanced Proficiency",
+        message: "Outstanding results! Maintain excellence with minor refinements 💎",
+        icon: "✨", 
+        recommendation: "Analyze rare mistakes and optimize time management"
+      };
     } else if (successRate >= 75) {
-      feedback = "Very good! Just a few mistakes to improve.";
-    } else if (successRate >= 50) {
-      feedback = "Good effort! Focus more on weak areas.";
+      feedback = {
+        level: "Strong Competence",
+        message: "Solid performance! You have a good foundation with room for growth 📘",
+        icon: "🔍",
+        recommendation: "Review error patterns and practice similar questions"
+      };
+    } else if (successRate >= 60) {
+      feedback = {
+        level: "Developing Understanding",
+        message: "Foundation building! Focus on core concepts needing improvement 💡",
+        icon: "🛠️",
+        recommendation: "Use study guides and re-attempt incorrect questions"
+      };
+    } else if (successRate >= 45) {
+      feedback = {
+        level: "Emerging Skills",
+        message: "Progress needed! Dedicate consistent study time daily ⏳",
+        icon: "📌",
+        recommendation: "Start with high-yield topics and join study groups"
+      };
+    } else if (successRate >= 30) {
+      feedback = {
+        level: "Basic Awareness",
+        message: "Requires urgent attention! Rebuild fundamentals from scratch 🚨",
+        icon: "⚠️",
+        recommendation: "Use alternative learning resources and increase study hours"
+      };
     } else {
-      feedback = "Needs improvement. Review the material carefully.";
+      feedback = {
+        level: "Critical Support Needed",
+        message: "Immediate intervention required! Contact instructor for rescue plan 🆘",
+        icon: "🚑",
+        recommendation: "Schedule one-on-one tutoring and weekly progress reviews"
+      };
     }
 
     const summary = {
