@@ -24,13 +24,10 @@ const Exam = sequelize.define('Exam', {
             key: 'id'
         }
     },
-    answer_id: {
-        type: DataTypes.INTEGER,
+    answers: {
+        type: DataTypes.JSON, 
         allowNull: false,
-        references: {
-            model: 'Answers', 
-            key: 'id'
-        }
+        defaultValue: []
     },
     mark: {
         type: DataTypes.INTEGER,

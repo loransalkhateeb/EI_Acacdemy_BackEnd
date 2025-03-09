@@ -9,61 +9,60 @@ const Student_History = require('../Models/Student_History');
 
 exports.createExam = async (req, res) => {
   try {
-  
-    const { user_id, question_id, answer_id } = req.body;
-  
-    const selectedAnswer = await Answer.findByPk(answer_id, {
-      attributes: ['id', 'answer_text']
-    });
+    const { user_id, question_id, answers } = req.body;
+
     
-    
-    if (!selectedAnswer) {
-      return res.status(404).json({
-        success: false,
-        message: "Selected answer not found"
-      });
-    }
-    
-  
     const question = await Question.findByPk(question_id, {
       attributes: ['id', 'correct_answer']
     });
-    
-    
+
     if (!question) {
       return res.status(404).json({
         success: false,
         message: "Question not found"
       });
     }
+
     
-   
-    const mark = (selectedAnswer.answer_text === question.correct_answer) ? 1 : 0;
+    if (!Array.isArray(answers) || answers.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Answers must be a non-empty array"
+      });
+    }
+
+    let correctAnswersArray;
+    try {
+      
+      correctAnswersArray = JSON.parse(question.correct_answer);
+      if (!Array.isArray(correctAnswersArray)) {
+        throw new Error("Incorrect format");
+      }
+    } catch (error) {
+      
+      correctAnswersArray = question.correct_answer.split(',').map(ans => ans.trim());
+    }
     
+    const isCorrect = answers.length === correctAnswersArray.length &&
+                      answers.every((ans, index) => ans.answer_text.trim() === correctAnswersArray[index].trim());
+    
+    const mark = isCorrect ? 1 : 0;
     
     const newExam = await Exam.create({ 
       user_id, 
       question_id, 
-      answer_id,
+      answers: answers, 
       mark
     });
-    
-   
-    const newHistory = await Student_History.create({ 
-      user_id, 
-      question_id, 
-      answer_id,
-      mark 
-    });
-    
-   
+
+
     res.status(201).json({
       success: true,
       mark,
-      exam: newExam,
-      history: newHistory
+      isCorrect,
+      exam: newExam
     });
-    
+
   } catch (error) {
     console.error("Error in createExam:", error.message);
     res.status(500).json({ 
@@ -73,6 +72,10 @@ exports.createExam = async (req, res) => {
     });
   }
 };
+
+
+
+
 
 
 exports.getExams = async (req, res) => {
