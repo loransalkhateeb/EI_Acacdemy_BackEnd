@@ -328,12 +328,56 @@ exports.deleteTestBank = async (req, res) => {
   }
 
   try {
-    await Unit.destroy({ where: { testBank_id: id } });
-    await Topic.destroy({ where: { unit_id: id } });
-    await Questions.destroy({ where: { topic_id: id } });
-    await Answers.destroy({ where: { question_id: id } });
-
+    console.log(`Starting deletion process for TestBank ID: ${id}`);
+    
+    
+    const units = await Unit.findAll({ where: { testBank_id: id } });
+    const unitIds = units.map(unit => unit.id);
+    console.log(`Found ${unitIds.length} units to delete for TestBank ID: ${id}`);
+    
+   
+    const topics = await Topic.findAll({ where: { unit_id: unitIds } });
+    const topicIds = topics.map(topic => topic.id);
+    console.log(`Found ${topicIds.length} topics to delete`);
+    
+  
+    const questions = await Questions.findAll({ where: { topic_id: topicIds } });
+    const questionIds = questions.map(question => question.id);
+    console.log(`Found ${questionIds.length} questions to delete`);
+    
+    if (questionIds.length > 0) {
+      
+      const deletedExams = await Exam.destroy({ where: { question_id: questionIds } });
+      console.log(`Deleted ${deletedExams} exam records`);
+      
+     
+      const deletedHistory = await Student_History.destroy({ where: { question_id: questionIds } });
+      console.log(`Deleted ${deletedHistory} student history records`);
+      
+      
+      const deletedAnswers = await Answers.destroy({ where: { question_id: questionIds } });
+      console.log(`Deleted ${deletedAnswers} answer records`);
+      
+      
+      const deletedQuestions = await Questions.destroy({ where: { id: questionIds } });
+      console.log(`Deleted ${deletedQuestions} questions`);
+    }
+    
+    if (topicIds.length > 0) {
+      
+      const deletedTopics = await Topic.destroy({ where: { id: topicIds } });
+      console.log(`Deleted ${deletedTopics} topics`);
+    }
+    
+    if (unitIds.length > 0) {
+     
+      const deletedUnits = await Unit.destroy({ where: { id: unitIds } });
+      console.log(`Deleted ${deletedUnits} units`);
+    }
+    
+  
     const deletedTestBank = await TestBank.destroy({ where: { id: id } });
+    console.log(`Deleted TestBank with ID: ${id}`);
 
     if (deletedTestBank === 0) {
       return res
@@ -341,12 +385,22 @@ exports.deleteTestBank = async (req, res) => {
         .json({ error: "TestBank not found or already deleted" });
     }
 
-    res.json({ message: "TestBank and all related data deleted successfully" });
+    res.json({ 
+      message: "TestBank and all related data deleted successfully",
+      summary: {
+        testBankId: id,
+        unitsDeleted: unitIds.length,
+        topicsDeleted: topicIds.length,
+        questionsDeleted: questionIds.length
+      }
+    });
   } catch (error) {
     console.error("Error during deletion:", error);
     res.status(500).json({ error: error.message });
   }
 };
+
+
 
 //QUESTIOS
 exports.getQuestionsById = async (req, res) => {
@@ -382,6 +436,7 @@ exports.getQuestionsById = async (req, res) => {
 
 const { Sequelize } = require('sequelize');
 const Exam = require("../Models/Exam");
+const Student_History = require("../Models/Student_History");
 
 
 exports.getQuestionsByQuestionCount = async (req, res) => {
