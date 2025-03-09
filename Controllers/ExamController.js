@@ -214,16 +214,18 @@ exports.getUserHistorySummary = async (req, res) => {
     let incorrectQuestions = [];
 
     historyEntries.forEach(entry => {
-      const userAnswerText = answerMap.get(entry.answer_id);
+      let answersArray = Array.isArray(entry.answers) ? entry.answers : JSON.parse(entry.answers || "[]");
+    
+      const userAnswerText = answersArray.map(answer => answer.answer_text).join(", ") || "No Answer";  
       const questionData = questionMap.get(entry.question_id) || {};
-
+    
       if (entry.mark === 1) {
         correctAnswers++;
       } else {
         incorrectAnswers++;
         incorrectQuestions.push({
           question_id: entry.question_id,
-          user_answer: userAnswerText || "N/A",
+          user_answer: userAnswerText,
           correct_answer: questionData.correct_answer || "Unknown",
           question_text: questionData.question_text || "N/A",
           explanation: questionData.explanation || "N/A",
@@ -231,6 +233,9 @@ exports.getUserHistorySummary = async (req, res) => {
         });
       }
     });
+    
+    
+    
 
     const totalQuestions = historyEntries.length;
     const successRate = (correctAnswers / totalQuestions) * 100;
