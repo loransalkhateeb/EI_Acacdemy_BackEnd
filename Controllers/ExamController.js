@@ -175,7 +175,7 @@ exports.getUserHistorySummary = async (req, res) => {
     }
 
     const historyEntries = await Exam.findAll({
-      attributes: ["id", "user_id", "question_id", "answer_id", "mark"],
+      attributes: ["id", "user_id", "question_id", "answers", "mark"],
       where: { user_id },
       order: [["mark", "DESC"]]
     });
