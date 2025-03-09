@@ -293,18 +293,20 @@ exports.getTestBankByIdByNumberOfQuestions = async (req, res) => {
         message: "Not enough questions available",
       });
     }
-
    
+    const selectedIds = new Set();
     const randomQuestions = [];
+    
     while (randomQuestions.length < parseInt(number_of_questions)) {
       const randomIndex = Math.floor(Math.random() * allQuestions.length);
       const question = allQuestions[randomIndex];
-
-      if (!randomQuestions.includes(question)) {
+    
+      if (!selectedIds.has(question.id)) {
+        selectedIds.add(question.id);
         randomQuestions.push(question);
       }
     }
-
+    
     
     res.status(200).json(randomQuestions);
   } catch (error) {
