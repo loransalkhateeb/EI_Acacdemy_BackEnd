@@ -56,11 +56,19 @@ exports.createExam = async (req, res) => {
     });
 
 
+    const newHistory = await Student_History.create({ 
+      user_id, 
+      question_id, 
+      answers: answers, 
+      mark
+    });
+
     res.status(201).json({
       success: true,
       mark,
       isCorrect,
-      exam: newExam
+      exam: newExam,
+      history:newHistory
     });
 
   } catch (error) {

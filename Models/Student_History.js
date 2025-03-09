@@ -25,13 +25,10 @@ const Student_History = sequelize.define('Student_History', {
             key: 'id'
         }
     },
-    answer_id: {
-        type: DataTypes.INTEGER,
+    answers: {
+        type: DataTypes.JSON, 
         allowNull: false,
-        references: {
-            model: 'Answers', 
-            key: 'id'
-        }
+        defaultValue: []
     },
     mark: {
         type: DataTypes.INTEGER,
