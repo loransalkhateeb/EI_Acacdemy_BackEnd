@@ -1,7 +1,7 @@
 const { client } = require('../Utils/redisClient');
 const { ErrorResponse, validateInput } = require("../Utils/ValidateInput.js");
 const Teacher = require('../Models/TeacherModel')
-const asyncHandler = require('../MiddleWares/asyncHandler')
+const asyncHandler = require('../Middlewares/asyncHandler.js')
 const ffmpeg = require('fluent-ffmpeg');
 const Department = require('../Models/DepartmentModel')
 const Course = require('../Models/Courses')
