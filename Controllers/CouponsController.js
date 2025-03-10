@@ -1,5 +1,5 @@
 const { client } = require("../Utils/redisClient");
-const asyncHandler = require("../MiddleWares/asyncHandler");
+const asyncHandler = require("../Middlewares/asyncHandler");
 const Coupon = require("../Models/CouponsModel");
 const Department = require("../Models/DepartmentModel");
 const Course = require("../Models/Courses");

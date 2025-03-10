@@ -7,7 +7,7 @@ const course_users = require("../Models/course_users.js");
 const Payment = require('../Models/PaymentsModel.js')
 
 const { Sequelize } = require("../Config/dbConnect.js");
-const asyncHandler = require("../MiddleWares/asyncHandler.js");
+const asyncHandler = require("../Middlewares/asyncHandler.js");
 const ffmpeg = require("fluent-ffmpeg");
 require("dotenv").config();
 const ffmpegPath =

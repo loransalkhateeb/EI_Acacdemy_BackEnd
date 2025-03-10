@@ -25,6 +25,9 @@ router.get('/getTestBankByIdByNumberOfQuestions/:id/:number_of_questions/:user_i
 
 router.get('/getTestBankByTopicIdByNumberOfQuestions/:topic_id/:number_of_questions/:user_id/:question_type',TestBankController.getTestBankByTopicIdByNumberOfQuestions);
 
+
+router.get('/getTopicsByTestBankId/:testBank_id',TestBankController.getTopicsByTestBankId);
+
 router.delete('/deletetestbank/:id',TestBankController.deleteTestBank);
 //Questions
 router.get('/getQuestionsByQuestionCount/:number_of_questions',TestBankController.getQuestionsByQuestionCount);
