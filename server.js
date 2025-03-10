@@ -194,12 +194,12 @@ sequelize.sync({ force: false }).then(() => {
 
 
 app.get("/", (req, res) => {
-  res.send("Welcome to Basma Academy!");
+  res.send("Welcome to Entellegence Academy!");
 });
 
 
 
-app.listen(process.env.PORT || 6060, () => {
+app.listen(process.env.PORT || 6065, () => {
   console.log(`Server is running on port ${process.env.PORT || 6060}`);
 });
 
