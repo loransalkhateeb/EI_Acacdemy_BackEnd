@@ -1,6 +1,6 @@
 const { Op } = require("sequelize");
 const { client } = require("../Utils/redisClient");
-const asyncHandler = require("../MiddleWares/asyncHandler");
+const asyncHandler = require("../Middlewares/asyncHandler");
 
 const Sequelize = require("../Config/dbConnect");
 

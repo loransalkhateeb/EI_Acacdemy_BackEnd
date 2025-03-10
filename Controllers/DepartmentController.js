@@ -1,4 +1,4 @@
-const asyncHandler = require("../MiddleWares/asyncHandler");
+const asyncHandler = require("../Middlewares/asyncHandler");
 const Department = require("../Models/DepartmentModel");
 const Payment = require("../Models/PaymentsModel");
 const { client } = require('../Utils/redisClient');

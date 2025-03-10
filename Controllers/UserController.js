@@ -1,7 +1,7 @@
 
 const { client } = require('../Utils/redisClient');
 const { ErrorResponse, validateInput } = require("../Utils/ValidateInput");
-const asyncHandler = require('../MiddleWares/asyncHandler')
+const asyncHandler = require('../Middlewares/asyncHandler')
 const User = require('../Models/UserModel')
 
 const TeacherStudent = require('../Models/Teacher_StudentModel')

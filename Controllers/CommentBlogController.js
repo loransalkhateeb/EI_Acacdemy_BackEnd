@@ -1,6 +1,6 @@
 const CommentBlog = require("../Models/CommentBlog");
 const Blog = require("../Models/BlogsModel");
-const asyncHandler = require("../MiddleWares/asyncHandler");
+const asyncHandler = require("../Middlewares/asyncHandler");
 const nodemailer = require("nodemailer");
 const { validateInput, ErrorResponse } = require("../Utils/ValidateInput");
 const { client } = require('../Utils/redisClient');
