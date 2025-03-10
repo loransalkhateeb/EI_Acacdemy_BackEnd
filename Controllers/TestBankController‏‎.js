@@ -328,7 +328,7 @@ exports.getTopicsByTestBankId = async (req, res) => {
   try {
     const { testBank_id } = req.params;
 
-    
+   
     if (!testBank_id) {
       return res.status(400).json({
         message: "يرجى تقديم معرف بنك الاختبار",
@@ -338,7 +338,7 @@ exports.getTopicsByTestBankId = async (req, res) => {
     
     const units = await Unit.findAll({
       where: { testBank_id },
-      attributes: ['id', 'unit_name'], 
+      attributes: ['id'],
     });
 
     
@@ -348,25 +348,20 @@ exports.getTopicsByTestBankId = async (req, res) => {
       });
     }
 
-    
+   
     const unitIds = units.map(unit => unit.id);
 
-    
+   
     const topics = await Topic.findAll({
       where: {
         unit_id: {
-          [Op.in]: unitIds, 
+          [Op.in]: unitIds,
         },
       },
-      include: [
-        {
-          model: Unit,
-          attributes: ['id', 'unit_name'],
-        },
-      ],
+      attributes: ['id', 'topic_name', 'unit_id'], 
       order: [
         ['unit_id', 'ASC'],
-        ['id', 'ASC'], 
+        ['id', 'ASC'],
       ],
     });
 
@@ -377,20 +372,8 @@ exports.getTopicsByTestBankId = async (req, res) => {
       });
     }
 
-    
-    res.status(200).json({
-      testBank_id,
-      units: units.map(unit => ({
-        unit_id: unit.id,
-        unit_name: unit.unit_name,
-        topics: topics
-          .filter(topic => topic.unit_id === unit.id)
-          .map(topic => ({
-            topic_id: topic.id,
-            topic_name: topic.topic_name,
-          })),
-      })),
-    });
+  
+    res.status(200).json(topics);
   } catch (error) {
     console.error("خطأ في getTopicsByTestBankId:", error.message);
     res.status(500).json({
