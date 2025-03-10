@@ -231,7 +231,7 @@ exports.getTestBankById = async (req, res) => {
 
 
 
-exports.getTestBankByIdByNumberOfQuestions = async (req, res) => {
+exports.getTestBankByIdByNumberOfQuestions = async (req, res) => { 
   try {
     const { id, number_of_questions,user_id } = req.params;
 
@@ -318,6 +318,109 @@ exports.getTestBankByIdByNumberOfQuestions = async (req, res) => {
   }
 };
 
+
+
+
+exports.getTestBankByTopicIdByNumberOfQuestions = async (req, res) => { 
+  try {
+    const { topic_id, number_of_questions, user_id, question_type } = req.params;
+
+    
+    if (!number_of_questions || isNaN(number_of_questions)) {
+      return res.status(400).json({
+        message: "الرجاء إدخال عدد صحيح للأسئلة",
+      });
+    }
+
+   
+    if (question_type !== "repeated" && question_type !== "non_repeated") {
+      return res.status(400).json({
+        message: "نوع الأسئلة يجب أن يكون 'repeated' أو 'non_repeated'",
+      });
+    }
+
+    
+    const existingExams = await Exam.findAll({ 
+      where: { user_id }
+    });
+    
+    if (existingExams.length > 0) {
+      await Exam.destroy({
+        where: { user_id }
+      });
+      console.log(`تم حذف ${existingExams.length} سجل امتحان سابق للمستخدم ${user_id}`);
+    }
+
+    
+    const topic = await Topic.findByPk(topic_id, {
+      include: {
+        model: Questions,
+        attributes: ["id", "question_text", "question_type","correct_answer","explanation"],
+        include: {
+          model: Answers,
+        },
+      },
+    });
+
+    
+    if (!topic) {
+      return res.status(404).json({
+        message: `لم يتم العثور على موضوع بالمعرف المقدم: ${topic_id}`,
+      });
+    }
+
+   
+    let allQuestions = [...topic.Questions];
+    
+   
+    if (question_type === "non_repeated") {
+      
+      const studentHistory = await Student_History.findAll({
+        where: { user_id },
+        attributes: ['question_id']
+      });
+      
+     
+      const answeredQuestionIds = studentHistory.map(record => record.question_id);
+      
+      
+      if (answeredQuestionIds.length > 0) {
+        allQuestions = allQuestions.filter(question => !answeredQuestionIds.includes(question.id));
+        console.log(`تم استبعاد ${answeredQuestionIds.length} سؤال من تاريخ الطالب`);
+      }
+    }
+
+   
+    if (allQuestions.length < number_of_questions) {
+      return res.status(400).json({
+        message: "لا يوجد عدد كافي من الأسئلة المتاحة بعد استبعاد الأسئلة المُجابة سابقاً",
+      });
+    }
+   
+   
+    const selectedIds = new Set();
+    const randomQuestions = [];
+    
+    while (randomQuestions.length < parseInt(number_of_questions)) {
+      const randomIndex = Math.floor(Math.random() * allQuestions.length);
+      const question = allQuestions[randomIndex];
+    
+      if (!selectedIds.has(question.id)) {
+        selectedIds.add(question.id);
+        randomQuestions.push(question);
+      }
+    }
+    
+    
+    res.status(200).json(randomQuestions);
+  } catch (error) {
+    console.error("خطأ في getTestBankByTopicIdByNumberOfQuestions:", error.message);
+    res.status(500).json({
+      message: "فشل في جلب أسئلة الموضوع",
+      error: error.message,
+    });
+  }
+};
 
 
 exports.deleteTestBank = async (req, res) => {
