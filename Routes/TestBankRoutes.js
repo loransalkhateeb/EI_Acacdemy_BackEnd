@@ -22,6 +22,9 @@ router.post('/addtestbank',upload.single('excelsheet'),TestBankController.addTes
 router.get('/gettestbank',TestBankController.getTestBank);
 router.get('/gettestbank/:id',TestBankController.getTestBankById);
 router.get('/getTestBankByIdByNumberOfQuestions/:id/:number_of_questions/:user_id',TestBankController.getTestBankByIdByNumberOfQuestions);
+
+router.get('/getTestBankByTopicIdByNumberOfQuestions/:topic_id/:number_of_questions/:user_id/:question_type',TestBankController.getTestBankByTopicIdByNumberOfQuestions);
+
 router.delete('/deletetestbank/:id',TestBankController.deleteTestBank);
 //Questions
 router.get('/getQuestionsByQuestionCount/:number_of_questions',TestBankController.getQuestionsByQuestionCount);
