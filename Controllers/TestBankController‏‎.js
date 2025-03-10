@@ -7,6 +7,8 @@ const Answers = require("../Models/AnswersModel");
 const axios = require("axios");
 const { ErrorResponse } = require("../Utils/ValidateInput");
 
+const { Op } = require('sequelize');
+
 exports.addTestBank = async (req, res) => {
   try {
     if (!req.file) {
@@ -317,6 +319,88 @@ exports.getTestBankByIdByNumberOfQuestions = async (req, res) => {
     });
   }
 };
+
+
+
+
+
+exports.getTopicsByTestBankId = async (req, res) => {
+  try {
+    const { testBank_id } = req.params;
+
+    
+    if (!testBank_id) {
+      return res.status(400).json({
+        message: "يرجى تقديم معرف بنك الاختبار",
+      });
+    }
+
+    
+    const units = await Unit.findAll({
+      where: { testBank_id },
+      attributes: ['id', 'unit_name'], 
+    });
+
+    
+    if (!units || units.length === 0) {
+      return res.status(404).json({
+        message: `لم يتم العثور على وحدات لبنك الاختبار بالمعرف: ${testBank_id}`,
+      });
+    }
+
+    
+    const unitIds = units.map(unit => unit.id);
+
+    
+    const topics = await Topic.findAll({
+      where: {
+        unit_id: {
+          [Op.in]: unitIds, 
+        },
+      },
+      include: [
+        {
+          model: Unit,
+          attributes: ['id', 'unit_name'],
+        },
+      ],
+      order: [
+        ['unit_id', 'ASC'],
+        ['id', 'ASC'], 
+      ],
+    });
+
+    
+    if (!topics || topics.length === 0) {
+      return res.status(404).json({
+        message: `لم يتم العثور على مواضيع للوحدات المرتبطة ببنك الاختبار بالمعرف: ${testBank_id}`,
+      });
+    }
+
+    
+    res.status(200).json({
+      testBank_id,
+      units: units.map(unit => ({
+        unit_id: unit.id,
+        unit_name: unit.unit_name,
+        topics: topics
+          .filter(topic => topic.unit_id === unit.id)
+          .map(topic => ({
+            topic_id: topic.id,
+            topic_name: topic.topic_name,
+          })),
+      })),
+    });
+  } catch (error) {
+    console.error("خطأ في getTopicsByTestBankId:", error.message);
+    res.status(500).json({
+      message: "فشل في جلب المواضيع لبنك الاختبار",
+      error: error.message,
+    });
+  }
+};
+
+
 
 
 
