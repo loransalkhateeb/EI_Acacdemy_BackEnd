@@ -45,7 +45,17 @@ const Coupon = sequelize.define('Coupon', {
   used: {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
-  }
+  },
+  testBank_id: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'TestBank',
+      key: 'id',
+    },
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
+  },
 }, {
   timestamps: false,
   tableName: 'coupons',
