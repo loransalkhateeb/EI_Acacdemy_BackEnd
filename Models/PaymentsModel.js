@@ -4,7 +4,8 @@ const Coupon = require('./CouponsModel');
 const Department = require('./DepartmentModel');
 const Course = require('./Courses');  
 const User = require('./UserModel');
-const CourseUser = require('../Models/course_users');  
+const CourseUser = require('../Models/course_users');
+const TestBank = require('../Models/TestBankModel');  
 
 const Payment = sequelize.define('Payment', {
   id: {
@@ -44,6 +45,14 @@ const Payment = sequelize.define('Payment', {
       key: 'id',
     },
   },
+  testBank_id: {  
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: TestBank,
+      key: 'id',
+    },
+  },
   user_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -70,13 +79,14 @@ const Payment = sequelize.define('Payment', {
     { name: 'idx_payment_department_id', fields: ['department_id'] },
     { name: 'idx_payment_user_id', fields: ['user_id'] },
     { name: 'idx_payment_coupon_id', fields: ['coupon_id'] },
+    { name: 'idx_payment_testBank_id', fields: ['testBank_id'] },  
   ],
 });
-
 
 Payment.belongsTo(Coupon, { foreignKey: 'coupon_id' });
 Payment.belongsTo(Department, { foreignKey: 'department_id' });
 Payment.belongsTo(Course, { foreignKey: 'course_id' });
+Payment.belongsTo(TestBank, { foreignKey: 'testBank_id' });  
 
 Payment.hasMany(CourseUser, { foreignKey: 'payment_id' });
 CourseUser.belongsTo(Payment, { foreignKey: 'payment_id' });
