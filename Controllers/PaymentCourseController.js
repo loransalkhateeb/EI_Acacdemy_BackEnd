@@ -68,10 +68,6 @@ exports.validateCouponCode = asyncHandler(async (req, res, next) => {
 });
 
 
-
-
-
-
 // exports.buyCourse = asyncHandler(async (req, res) => {
 //   const { student_name, email, address, phone, course_id, coupon_code, user_id } = req.body;
 
