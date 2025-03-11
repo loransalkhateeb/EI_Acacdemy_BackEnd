@@ -3,6 +3,7 @@ const asyncHandler = require("../Middlewares/asyncHandler");
 const Coupon = require("../Models/CouponsModel");
 const Department = require("../Models/DepartmentModel");
 const Course = require("../Models/Courses");
+const TestBank = require("../Models/TestBankModel");
 
 
 
@@ -17,7 +18,15 @@ exports.addCoupon = asyncHandler(async (req, res) => {
     testBank_id
   } = req.body;
 
+  console.log("Extracted Values:");
+  console.log("coupon_code:", coupon_code);
+  console.log("coupon_type:", coupon_type);
+  console.log("expiration_date:", expiration_date);
+  console.log("testBank_id:", testBank_id);
+  console.log("used:", used);
   
+
+
   if (!["course", "department", "testBank"].includes(coupon_type)) {
     return res.status(400).json({ message: "Invalid coupon type" });
   }

@@ -15,7 +15,7 @@ const Coupon = sequelize.define('Coupon', {
     unique: true,
   },
   coupon_type: {
-    type: DataTypes.ENUM('course', 'department'),
+    type: DataTypes.ENUM('course', 'department','testBank'),
     allowNull: false,
   },
   expiration_date: {
