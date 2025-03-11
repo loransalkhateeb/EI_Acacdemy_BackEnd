@@ -163,6 +163,133 @@ exports.addCourse = async (req, res) => {
     });
   }
 };
+
+
+
+
+// exports.addCourse = async (req, res) => {
+//   try {
+//     const {
+//       subject_name,
+//       department_id,
+//       before_offer,
+//       after_offer,
+//       coupon,
+//       descr,
+//       std_num,
+//       rating,
+//       teacher_id,
+//     } = req.body;
+
+//     console.log("Files received:", req.files);
+//     console.log("Body received:", req.body);
+
+//     const titles = req.body["title"] || [];
+//     const links = req.body["link"] || [];
+//     const normalizedTitles = Array.isArray(titles) ? titles : [titles];
+//     const normalizedLinks = Array.isArray(links) ? links : links ? [links] : [];
+
+//     const img = req.files['img'] ? req.files['img'][0].filename : null;
+//     const defaultvideo = req.files['defaultvideo'] ? req.files['defaultvideo'][0].filename : null;
+//     const file_book = req.files['file_book'] ? req.files['file_book'][0].filename : null;
+
+//     if (file_book && !file_book.endsWith('.pdf')) {
+//       file_book += '.pdf';
+//     }
+
+//     // Create the new course
+//     const newCourse = await Course.create({
+//       subject_name,
+//       department_id,
+//       before_offer,
+//       after_offer,
+//       coupon,
+//       descr,
+//       std_num,
+//       rating,
+//       teacher_id,
+//       img,
+//       defaultvideo,
+//       file_book,
+//     });
+
+//     const courseId = newCourse.id;
+
+//     // Prepare video data
+//     const videoFileData = videoFiles.map((file) => ({
+//       filename: file.filename,
+//       type: "file",
+//     }));
+
+//     const videoLinkData = normalizedLinks.map((link) => ({
+//       filename: link,
+//       type: "link",
+//     }));
+
+//     const videoData = [...videoFileData, ...videoLinkData];
+
+//     const processedVideoData = await Promise.all(
+//       videoData.map(async (video) => {
+//         if (video.type === "file") {
+//           const videoPath = `https://res.cloudinary.com/durjqlivi/video/upload/${video.filename}`;
+//           try {
+//             const duration = await getVideoDurationInSeconds(videoPath); 
+//             return { ...video, duration, link: null };
+//           } catch (err) {
+//             console.error(`Error processing video ${video.filename}: ${err.message}`);
+//             return { ...video, duration: 0, link: null }; 
+//           }
+//         } else {
+//           return { ...video, duration: 0, link: video.filename };
+//         }
+//       })
+//     );
+
+//     // Calculate total duration of videos
+//     const totalDurationInSeconds = processedVideoData.filter((v) => v.type === "file").reduce((acc, v) => acc + v.duration, 0);
+//     const formattedTotalDuration = formatDuration(totalDurationInSeconds);
+
+//     // Prepare video values
+//     const videoValues = processedVideoData.map((video, index) => [
+//       courseId,
+//       normalizedTitles[index] || "Untitled",
+//       video.type === "file" ? video.filename : "",
+//       video.type === "link" ? video.link : "",
+//       video.type,
+//       formatDuration(video.duration || 0),
+//     ]);
+
+//     // Bulk insert video data into the database
+//     await Video.bulkCreate(
+//       videoValues.map(([course_id, title, url, link, type, duration]) => ({
+//         course_id,
+//         title,
+//         url,
+//         link,
+//         type,
+//         duration,
+//       }))
+//     );
+
+//     // Update course with the total video duration
+//     await newCourse.update({
+//       total_video_duration: formattedTotalDuration || "0h 0m 0s", 
+//     });
+
+//     // Send success response as JSON
+//     res.status(201).json({
+//       message: 'Course added successfully',
+//     });
+//   } catch (error) {
+//     console.error('Error:', error);  // طباعة الخطأ بالكامل
+//     res.status(500).json({
+//       error: 'Failed to add course',
+//       details: error.message || error,
+//     });
+//   }
+// };
+
+
 exports.getcourses = async (req, res) => {
   try {
     const courses = await Course.findAll({

@@ -3,15 +3,12 @@ const multer = require('multer');
 const cloudinary = require('./CloudinaryConfig');  
 
 const storage = new CloudinaryStorage({
-  cloudinary: cloudinary, 
+  cloudinary: cloudinary,
   params: {
-
-    folder: '/Basma_Academy', 
-    access_mode: 'public',
-    allowed_formats: ['jpg', 'png', 'mp4', 'avi', 'mkv', 'pdf', 'doc', 'docx', 'txt','webp',"avif"],  
+    folder: 'Basma_Academy',
+    resource_type: 'auto',
   },
 });
-
 
 const upload = multer({ storage });
 

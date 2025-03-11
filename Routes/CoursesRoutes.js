@@ -4,13 +4,33 @@ const upload = require('../Config/Multer');
 const CoursesController = require('../Controllers/CoursesController');
 const rateLimit = require('../Middlewares/rateLimiter')
 
-router.post('/addCourse',
-  upload.fields([
-    { name: 'img', maxCount: 1 },
-    { name: 'defaultvideo', maxCount: 1 },
-    { name: 'url', maxCount: 10 },
-    { name: 'file_book', maxCount: 1 }
-  ]), rateLimit,CoursesController.addCourse);
+
+
+router.post('/addCourse', 
+  (req, res, next) => {
+    const uploadMiddleware = upload.fields([
+      { name: 'img', maxCount: 1 },
+      { name: 'defaultvideo', maxCount: 1 }, 
+      { name: 'file_book', maxCount: 1 },
+      { name: 'url', maxCount: 10 }
+    ]);
+    
+    uploadMiddleware(req, res, (err) => {
+      if (err) {
+        console.error('Multer Error:', err);
+        return res.status(400).json({
+          error: 'File upload failed',
+          details: err.message || JSON.stringify(err)
+        });
+      }
+      next();
+    });
+  },
+  rateLimit,
+  CoursesController.addCourse
+);
+
+
 
 router.get('/',rateLimit, CoursesController.getcourses);
 router.get('/details/:id',rateLimit, CoursesController.getCourseById);
