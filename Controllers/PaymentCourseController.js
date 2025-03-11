@@ -222,16 +222,33 @@ exports.buyCourse = asyncHandler(async (req, res) => {
     const paymentStatus = "approved";
 
    
-    if (course_id) {
+    if (course_id && testBank_id) {
+     
+      await CourseUser.create({
+        user_id,
+        course_id,
+        testBank_id,  
+        payment_id: payment.id,
+        payment_status: paymentStatus,
+      });
+    } else if (course_id) {
+     
       await CourseUser.create({
         user_id,
         course_id,
         payment_id: payment.id,
         payment_status: paymentStatus,
       });
+    } else if (testBank_id) {
+  
+      await CourseUser.create({
+        user_id,
+        testBank_id,  
+        payment_id: payment.id,
+        payment_status: paymentStatus,
+      });
     }
-
-
+    
     
     let successMessage = "Purchase successful.";
     if (course_id && testBank_id) {
