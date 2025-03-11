@@ -27,7 +27,7 @@ exports.addCoupon = asyncHandler(async (req, res) => {
   
 
 
-  if (!["course", "department", "testBank"].includes(coupon_type)) {
+  if (!["course", "department", "testBank","courseandtestbank"].includes(coupon_type)) {
     return res.status(400).json({ message: "Invalid coupon type" });
   }
 
@@ -57,6 +57,16 @@ exports.addCoupon = asyncHandler(async (req, res) => {
       .json({ message: "TestBank ID is required for testBank type" });
   }
 
+
+  if (coupon_type === "courseandtestbank") {
+    if (!course_id) {
+      return res.status(400).json({ message: "Course ID is required for courseandtestbank type" });
+    }
+    if (!testBank_id) {
+      return res.status(400).json({ message: "TestBank ID is required for courseandtestbank type" });
+    }
+  }
+  
   
   const departmentExists =
     coupon_type === "department" && (await Department.findByPk(department_id));
@@ -90,10 +100,11 @@ exports.addCoupon = asyncHandler(async (req, res) => {
     coupon_type,
     expiration_date,
     department_id: coupon_type === "department" ? department_id : null,
-    course_id: coupon_type === "course" ? course_id : null,
-    testBank_id: coupon_type === "testBank" ? testBank_id : null,
+    course_id: coupon_type === "course" || coupon_type === "courseandtestbank" ? course_id : null,
+    testBank_id: coupon_type === "testBank" || coupon_type === "courseandtestbank" ? testBank_id : null,
     used: used || false,
   });
+  
 
   
   await client.set(`coupon:${coupon_code}`, JSON.stringify(newCoupon), {
