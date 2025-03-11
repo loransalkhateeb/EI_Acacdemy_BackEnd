@@ -106,11 +106,6 @@ exports.addCoupon = asyncHandler(async (req, res) => {
   });
   
 
-  
-  await client.set(`coupon:${coupon_code}`, JSON.stringify(newCoupon), {
-    EX: 3600,
-  });
-
   res.status(201).json({ message: "Coupon added successfully", newCoupon });
 });
 
