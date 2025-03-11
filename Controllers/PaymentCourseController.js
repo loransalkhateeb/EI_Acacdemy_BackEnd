@@ -12,6 +12,8 @@ const Department = require("../Models/DepartmentModel");
 const Teacher = require("../Models/TeacherModel");
 const courses = require("../Models/Courses");
 const TestBank = require("../Models/TestBankModel");
+const Unit = require("../Models/UnitModel");
+const Topic = require("../Models/TopicsModel");
 
 
 
@@ -270,16 +272,20 @@ exports.buyCourse = asyncHandler(async (req, res) => {
 
 
 
+
 exports.getApprovedCoursesForUser = asyncHandler(async (req, res, next) => {
   const { user_id } = req.params;
 
   try {
+
     await client.del(`approved_courses_${user_id}`);
+
 
     const cachedCourses = await client.get(`approved_courses_${user_id}`);
     if (cachedCourses) {
       return res.status(200).json(JSON.parse(cachedCourses));
     }
+
 
     const courses = await CourseUser.findAll({
       where: {
@@ -295,7 +301,6 @@ exports.getApprovedCoursesForUser = asyncHandler(async (req, res, next) => {
               model: Coupon,
               where: { expiration_date: { [Op.gte]: new Date() } },
             },
-           
           ],
         },
         {
@@ -312,21 +317,36 @@ exports.getApprovedCoursesForUser = asyncHandler(async (req, res, next) => {
           ],
         },
         {
-          model:TestBank,
-          attributes:["id","testBankCourse_name","semester"]
-        }
+          model: TestBank,
+          attributes: ["id", "testBankCourse_name", "semester"],
+          include: [
+            {
+              model: Unit,
+              attributes: ["id", "unit_name", "testBank_id"],
+              include: [
+                {
+                  model: Topic,
+                  attributes: ["id", "topic_name"],
+                },
+              ],
+            },
+          ],
+        },
       ],
     });
 
+    
     await client.setEx(
       `approved_courses_${user_id}`,
       3600,
       JSON.stringify(courses)
     );
 
+   
     res.status(200).json(courses);
   } catch (error) {
     console.error("Error fetching approved courses:", error);
     return res.status(500).json({ error: "Database error" });
   }
 });
+
