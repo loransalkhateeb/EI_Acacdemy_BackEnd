@@ -12,20 +12,23 @@ const Department = require("../Models/DepartmentModel");
 const Teacher = require("../Models/TeacherModel");
 const courses = require("../Models/Courses");
 
-exports.validateCouponCode = asyncHandler(async (req, res, next) => {
-  const { coupon_code, course_id } = req.body;
 
-  if (!coupon_code || !course_id) {
+
+exports.validateCouponCode = asyncHandler(async (req, res, next) => {
+  const { coupon_code, course_id, testBank_id } = req.body;
+
+  
+  if (!coupon_code || (!course_id && !testBank_id)) {
     return res
       .status(400)
-      .json({ error: "Coupon code and course ID are required" });
+      .json({ error: "Coupon code and either course ID or testBank ID are required" });
   }
 
   try {
     const currentDateTime = new Date();
 
     const coupon = await Coupon.findOne({
-      attributes: ["id", "coupon_type", "course_id"],
+      attributes: ["id", "coupon_type", "course_id", "testBank_id"],
       where: {
         coupon_code,
         expiration_date: {
@@ -39,10 +42,17 @@ exports.validateCouponCode = asyncHandler(async (req, res, next) => {
       return res.status(400).json({ error: "Invalid or expired coupon code" });
     }
 
-    if (coupon.coupon_type === "course" && coupon.course_id !== course_id) {
+    
+    if (coupon.coupon_type === "course" && course_id && coupon.course_id !== course_id) {
       return res
         .status(400)
         .json({ error: "Coupon is not valid for this course" });
+    }
+
+    if (coupon.coupon_type === "testBank" && testBank_id && coupon.testBank_id !== testBank_id) {
+      return res
+        .status(400)
+        .json({ error: "Coupon is not valid for this test bank" });
     }
 
     res.status(200).json({
@@ -55,6 +65,10 @@ exports.validateCouponCode = asyncHandler(async (req, res, next) => {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+
+
+
 
 
 exports.buyCourse = asyncHandler(async (req, res) => {
