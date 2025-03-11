@@ -311,6 +311,10 @@ exports.getApprovedCoursesForUser = asyncHandler(async (req, res, next) => {
             },
           ],
         },
+        {
+          model:TestBank,
+          attributes:["id","testBankCourse_name","semester"]
+        }
       ],
     });
 
