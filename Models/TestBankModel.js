@@ -10,19 +10,37 @@ const TestBank = sequelize.define('TestBank', {
   semester: {
     type: DataTypes.STRING,
     allowNull: false
-  }
+  },
+  description: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+  image: {
+    type: DataTypes.STRING,  
+    allowNull: true
+  },
+  video: {
+    type: DataTypes.STRING,  
+    allowNull: true
+  },
+  before_price: {
+    type: DataTypes.DECIMAL(10, 2),  
+    allowNull: true
+  },
+  after_price: {
+    type: DataTypes.DECIMAL(10, 2),  
+    allowNull: true
+  },
 });
+
+// Remove the duplicate association definitions and keep only one set
 TestBank.hasMany(UnitModel, { 
   foreignKey: 'testBank_id', 
-  onDelete: 'CASCADE'  // This ensures that when a Unit is deleted, all associated Topics will be deleted
+  onDelete: 'CASCADE'  // This ensures that when a TestBank is deleted, all associated Units will be deleted
 });
 
 UnitModel.belongsTo(TestBank, { 
-  foreignKey: 'testBank_id',
-  onDelete: 'CASCADE'  // This ensures that if the related Unit is deleted, the Topic will also be deleted
+  foreignKey: 'testBank_id'
 });
-// Define association (1:M relationship between TestBank and UnitModel)
-TestBank.hasMany(UnitModel, { foreignKey: 'testBank_id' });
-UnitModel.belongsTo(TestBank, { foreignKey: 'testBank_id' });
 
 module.exports = TestBank;
