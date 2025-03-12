@@ -9,36 +9,69 @@ const { ErrorResponse } = require("../Utils/ValidateInput");
 
 const { Op } = require('sequelize');
 
+
+
+
 exports.addTestBank = async (req, res) => {
+  const { testBankCourse_name, semester, description, before_price, after_price, image, video, excelsheet } = req.body;
+
+  console.log("Excel File:", req.files.excelsheet);
+  console.log("Image File:", req.files.image);
+  console.log("Video File:", req.files.video);
+
+  
+  if (!req.files || !req.files.excelsheet || !req.files.image || !req.files.video) {
+    return res.status(400).json({ error: "One or more files are missing!" });
+  }
+
   try {
-    if (!req.file) {
-      return res.status(400).json({ error: "No file uploaded!" });
-    }
+    const excelsheetFile = req.files.excelsheet[0];  
+    const imageFile = req.files.image[0];  
+    const videoFile = req.files.video[0]; 
 
-    const fileUrl = req.file.path; // Use .path to get the Cloudinary file URL
-    console.log("File URL:", fileUrl); // Debugging
+    console.log("Excel File:", excelsheetFile);
+    console.log("Image File:", imageFile);
+    console.log("Video File:", videoFile);
 
-    // Download the file using axios
+   
+    const excelsheetPath = excelsheetFile ? excelsheetFile.path : "";
+    const imagePath = imageFile ? imageFile.path : "";
+    const videoPath = videoFile ? videoFile.path : "";
+
+    
+    const [course] = await TestBank.findOrCreate({
+      where: { testBankCourse_name, semester },
+      defaults: {
+        testBankCourse_name,
+        semester,
+        description: description || "",
+        before_price: before_price || 0,
+        after_price: after_price || 0,
+        image: imagePath,  
+        video: videoPath,  
+        excelsheet: excelsheetPath, 
+      },
+    });
+
+    const fileUrl = excelsheetFile.path;
     const response = await axios.get(fileUrl, { responseType: "arraybuffer" });
-
-    // Read the Excel file from the buffer
     const workbook = xlsx.read(response.data, { type: "buffer" });
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
     const data = xlsx.utils.sheet_to_json(sheet);
 
-    // Process and insert data into the database
     await insertData(data);
 
-    res
-      .status(200)
-      .json({ message: "File processed and data inserted successfully!" });
+    res.status(200).json({ message: "File processed and data inserted successfully!" });
+
   } catch (err) {
     console.error("Error processing file:", err);
-    res
-      .status(500)
-      .json({ error: "Something went wrong while processing the file." });
+    res.status(500).json({ error: "Something went wrong while processing the file." });
   }
 };
+
+
+
+
 
 async function insertData(data) {
   for (const row of data) {
@@ -119,9 +152,11 @@ async function insertData(data) {
       console.log(`Inserted question for topic: ${topicName}`);
     } catch (error) {
       console.error("Error inserting data:", error);
-    }
-  }
+   }
+  }
 }
+
+
 
 exports.getTestBank = async (req, res) => {
   try {
@@ -506,6 +541,13 @@ exports.deleteTestBank = async (req, res) => {
     console.log(`Found ${unitIds.length} units to delete for TestBank ID: ${id}`);
     
    
+
+    const deletedPayments = await Payment.destroy({ where: { testBank_id: id } });
+    console.log(`Deleted ${deletedPayments} payment records`);
+
+    const deletedCourseUsers = await course_users.destroy({ where: { testBank_id: id } });
+    console.log(`Deleted ${deletedCourseUsers} course user records`);
+
     const topics = await Topic.findAll({ where: { unit_id: unitIds } });
     const topicIds = topics.map(topic => topic.id);
     console.log(`Found ${topicIds.length} topics to delete`);
@@ -607,6 +649,8 @@ exports.getQuestionsById = async (req, res) => {
 const { Sequelize } = require('sequelize');
 const Exam = require("../Models/Exam");
 const Student_History = require("../Models/Student_History");
+const Payment = require("../Models/PaymentsModel");
+const course_users = require("../Models/course_users");
 
 
 exports.getQuestionsByQuestionCount = async (req, res) => {

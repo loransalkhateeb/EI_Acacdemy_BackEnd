@@ -6,19 +6,24 @@ const rateLimiter = require('../Middlewares/rateLimiter');
 const multer = require("multer");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const cloudinary = require('../Config/CloudinaryConfig');  
+const upload = require('../Config/Multer');
 
-const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: "Ba9ma_excelsheet", // Cloudinary folder
-    format: async (req, file) => "xlsx", // Ensure the file is saved as .xlsx
-    resource_type: "raw", // Necessary for non-image files
+
+
+
+router.post('/addtestbank', 
+  (req, res, next) => {
+    const uploadMiddleware = upload.fields([
+      { name: 'image', maxCount: 1 },
+      { name: 'video', maxCount: 1 },
+      { name: 'excelsheet', maxCount: 1 },
+    ]);
+    // استخدام middleware لتحميل الملفات
+    uploadMiddleware(req, res, next);
   },
-});
-const upload = multer({ storage });
+  TestBankController.addTestBank  // استدعاء الـ controller بعد تحميل الملفات
+);
 
-
-router.post('/addtestbank',upload.single('excelsheet'),TestBankController.addTestBank);
 router.get('/gettestbank',TestBankController.getTestBank);
 router.get('/gettestbank/:id',TestBankController.getTestBankById);
 router.get('/getTestBankByIdByNumberOfQuestions/:id/:number_of_questions/:user_id',TestBankController.getTestBankByIdByNumberOfQuestions);
