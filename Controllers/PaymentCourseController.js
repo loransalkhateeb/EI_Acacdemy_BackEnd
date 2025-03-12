@@ -20,7 +20,6 @@ const Topic = require("../Models/TopicsModel");
 exports.validateCouponCode = asyncHandler(async (req, res, next) => {
   const { coupon_code, course_id, testBank_id } = req.body;
 
-  
   if (!coupon_code || (!course_id && !testBank_id)) {
     return res
       .status(400)
@@ -52,10 +51,24 @@ exports.validateCouponCode = asyncHandler(async (req, res, next) => {
         .json({ error: "Coupon is not valid for this course" });
     }
 
+    
     if (coupon.coupon_type === "testBank" && testBank_id && coupon.testBank_id !== testBank_id) {
       return res
         .status(400)
         .json({ error: "Coupon is not valid for this test bank" });
+    }
+
+    
+    if (coupon.coupon_type === "courseandtestbank") {
+      
+    
+      if (course_id && testBank_id) {
+        if (coupon.course_id !== course_id || coupon.testBank_id !== testBank_id) {
+          return res
+            .status(400)
+            .json({ error: "Coupon is not valid for this course and test bank combination" });
+        }
+      }
     }
 
     res.status(200).json({
