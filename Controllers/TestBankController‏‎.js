@@ -6,7 +6,6 @@ const Questions = require("../Models/QuestionsModel");
 const Answers = require("../Models/AnswersModel");
 const axios = require("axios");
 const { ErrorResponse } = require("../Utils/ValidateInput");
-
 const { Op } = require('sequelize');
 
 
@@ -598,7 +597,7 @@ exports.deleteTestBank = async (req, res) => {
 
 
 
-//QUESTIOS
+
 exports.getQuestionsById = async (req, res) => {
   try {
     const { topic_id } = req.params;

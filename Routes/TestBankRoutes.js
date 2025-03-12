@@ -18,10 +18,10 @@ router.post('/addtestbank',
       { name: 'video', maxCount: 1 },
       { name: 'excelsheet', maxCount: 1 },
     ]);
-    // استخدام middleware لتحميل الملفات
+   
     uploadMiddleware(req, res, next);
   },
-  TestBankController.addTestBank  // استدعاء الـ controller بعد تحميل الملفات
+  TestBankController.addTestBank  
 );
 
 router.get('/gettestbank',TestBankController.getTestBank);
