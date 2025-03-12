@@ -13,7 +13,7 @@ const { Op } = require('sequelize');
 
 
 exports.addTestBank = async (req, res) => {
-  const { testBankCourse_name, semester, description, before_price, after_price, image, video, excelsheet } = req.body;
+  const { description, before_price, after_price} = req.body;
 
   console.log("Excel File:", req.files.excelsheet);
   console.log("Image File:", req.files.image);
@@ -38,20 +38,7 @@ exports.addTestBank = async (req, res) => {
     const imagePath = imageFile ? imageFile.path : "";
     const videoPath = videoFile ? videoFile.path : "";
 
-    
-    const [course] = await TestBank.findOrCreate({
-      where: { testBankCourse_name, semester },
-      defaults: {
-        testBankCourse_name,
-        semester,
-        description: description || "",
-        before_price: before_price || 0,
-        after_price: after_price || 0,
-        image: imagePath,  
-        video: videoPath,  
-        excelsheet: excelsheetPath, 
-      },
-    });
+
 
     const fileUrl = excelsheetFile.path;
     const response = await axios.get(fileUrl, { responseType: "arraybuffer" });
@@ -68,9 +55,6 @@ exports.addTestBank = async (req, res) => {
     res.status(500).json({ error: "Something went wrong while processing the file." });
   }
 };
-
-
-
 
 
 async function insertData(data) {
@@ -103,7 +87,7 @@ async function insertData(data) {
         continue;
       }
 
-      // Insert course if not exists
+      // // Insert course if not exists
       const [course] = await TestBank.findOrCreate({
         where: { testBankCourse_name: courseName, semester },
         defaults: { testBankCourse_name: courseName, semester },
