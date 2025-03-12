@@ -6,44 +6,54 @@ const Questions = require("../Models/QuestionsModel");
 const Answers = require("../Models/AnswersModel");
 const axios = require("axios");
 const { ErrorResponse } = require("../Utils/ValidateInput");
+
 const { Op } = require('sequelize');
 
 
 
-
 exports.addTestBank = async (req, res) => {
-  const { description, before_price, after_price} = req.body;
+  const { description, before_price, after_price } = req.body;
 
-  console.log("Excel File:", req.files.excelsheet);
-  console.log("Image File:", req.files.image);
-  console.log("Video File:", req.files.video);
-
-  
   if (!req.files || !req.files.excelsheet || !req.files.image || !req.files.video) {
     return res.status(400).json({ error: "One or more files are missing!" });
   }
 
   try {
-    const excelsheetFile = req.files.excelsheet[0];  
-    const imageFile = req.files.image[0];  
-    const videoFile = req.files.video[0]; 
-
-    console.log("Excel File:", excelsheetFile);
-    console.log("Image File:", imageFile);
-    console.log("Video File:", videoFile);
-
-   
-    const excelsheetPath = excelsheetFile ? excelsheetFile.path : "";
-    const imagePath = imageFile ? imageFile.path : "";
-    const videoPath = videoFile ? videoFile.path : "";
+    const excelsheetFile = req.files.excelsheet[0];
+    const imageFile = req.files.image[0];
+    const videoFile = req.files.video[0];
 
 
+    const excelsheetPath = excelsheetFile.path;
+    const imagePath = imageFile.path;
+    const videoPath = videoFile.path;
 
-    const fileUrl = excelsheetFile.path;
+
+    const fileUrl = excelsheetPath;
     const response = await axios.get(fileUrl, { responseType: "arraybuffer" });
     const workbook = xlsx.read(response.data, { type: "buffer" });
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
     const data = xlsx.utils.sheet_to_json(sheet);
+
+   
+    const courseName = data[0]?.["المادة"];
+    const semester = data[0]?.["الفصل الدراسي"];
+
+    if (!courseName || !semester) {
+      return res.status(400).json({ error: "Course name or semester is missing in the Excel sheet!" });
+    }
+
+  
+    const testBankRecord = await TestBank.create({
+      testBankCourse_name: courseName,
+      semester: semester,
+      description,
+      before_price,
+      after_price,
+      excelsheet: excelsheetPath, 
+      image: imagePath,          
+      video: videoPath          
+    });
 
     await insertData(data);
 
@@ -54,6 +64,7 @@ exports.addTestBank = async (req, res) => {
     res.status(500).json({ error: "Something went wrong while processing the file." });
   }
 };
+
 
 
 async function insertData(data) {
@@ -135,9 +146,11 @@ async function insertData(data) {
       console.log(`Inserted question for topic: ${topicName}`);
     } catch (error) {
       console.error("Error inserting data:", error);
-   }
-  }
 }
+}
+}
+
+
 
 
 
@@ -597,7 +610,7 @@ exports.deleteTestBank = async (req, res) => {
 
 
 
-
+//QUESTIOS
 exports.getQuestionsById = async (req, res) => {
   try {
     const { topic_id } = req.params;
