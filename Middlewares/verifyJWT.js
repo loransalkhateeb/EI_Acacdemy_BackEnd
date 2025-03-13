@@ -60,10 +60,7 @@ setInterval(() => {
 
 exports.register = asyncHandler(async (req, res) => {
   const { name, email, password, confirmPassword, role } = req.body;
-  const img = req.file ? req.file.path : "Basma_Academy/lmtsuynf4f1ifrs96qyi";
-
-
-  
+  const img = req.file ? req.file.path : "Basma_Academy/rmhmdx7xyiromcox7y6e";
 
   const validationErrors = validateInput({
     name,
