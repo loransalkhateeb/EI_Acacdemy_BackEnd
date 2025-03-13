@@ -166,7 +166,7 @@ exports.addCoupon = asyncHandler(async (req, res) => {
 // });
 
 exports.getCoupon = asyncHandler(async (req, res) => {
-  await client.del("coupons");
+
   const cachedCoupons = await client.get("coupons");
 
   if (cachedCoupons) {
@@ -175,10 +175,13 @@ exports.getCoupon = asyncHandler(async (req, res) => {
 
   const coupons = await Coupon.findAll();
 
-  await client.set("coupons", JSON.stringify(coupons), "EX", 3600);
+  await client.set("coupons", JSON.stringify(coupons));
 
   res.status(200).json(coupons);
 });
+
+
+
 exports.getCouponById = async (req, res) => {
   try {
     const { id } = req.params;
